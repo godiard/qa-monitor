@@ -1,0 +1,31 @@
+Archivo generado haciendo:
+
+$ ../tools/findbugs-3.0.1/bin/findbugs -project superclubs.fbp -textui -xml -output errors2.xml -low
+
+Bugs High Priority
+
+[gonzalo@localhost superclubs]$ grep "priority=\"1\"" errors2.xml  |wc
+    638    3828   73399
+
+[gonzalo@localhost superclubs]$ grep "<BugInstance" errors2.xml  |wc
+   4861   29166  503050
+
+Cantidad de Clases
+
+[gonzalo@localhost superclubs]$ grep "<ClassStats" errors2.xml  |wc
+   1461   10251  245276
+
+Cantidad de Clases sin errores
+
+[gonzalo@localhost superclubs]$ grep "<ClassStats" errors2.xml  |grep "bugs=\"0\"" |  wc
+    521    3126   79390
+
+Cantidad de @include en jsp
+
+[gonzalo@localhost superclubs]$ grep -r "@include" --include=*.jsp | wc
+    314    1103   45698
+
+
+
+$ sudo dnf install python-gitapi
+
