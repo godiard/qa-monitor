@@ -4,6 +4,23 @@ from subprocess import Popen, STDOUT, PIPE
 MAX_DEPTH = 200
 
 
+def _exec_command(path, *args):
+    """Run a git command in path and return the result. Throws on error."""
+    if not path:
+        path = '.'
+    print list(args)
+    proc = Popen(list(args), stdout=PIPE, stderr=PIPE, cwd=path)
+
+    out, err = [x.decode('utf-8') for x in proc.communicate()]
+
+    if proc.returncode:
+        cmd = ' '.join(args)
+        raise Exception(
+            "Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
+            % (cmd, err, out, proc.returncode), exit_code=proc.returncode)
+    return out
+
+
 class Repository:
 
     def __init__(self, url):
@@ -18,13 +35,15 @@ class Repository:
 
         print 'Directory ' + self.directory
         if not os.path.exists(self.directory):
-            self._exec_command('.', 'clone', url)
+            _exec_command('.', 'git', 'clone', url)
+        else:
+            _exec_command(self.directory, 'git', 'pull')
         self.read_log()
 
     def read_log(self):
         # Read the log
-        log_output = self._exec_command(self.directory, 'log',
-                                        '--pretty=format:%H|%aN|%s')
+        log_output = _exec_command(self.directory, 'git', 'log',
+                                   '--pretty=format:%H|%aN|%s')
         self.log = []
         for line in log_output.split('\n'):
             print line
@@ -36,20 +55,14 @@ class Repository:
                       'subject': subject}
             self.log.append(commit)
 
-    def _exec_command(self, path, *args):
-        """Run a git command in path and return the result. Throws on error."""
-        if not path:
-            path = '.'
-        proc = Popen(["git"] + list(args), stdout=PIPE, stderr=PIPE, cwd=path)
 
-        out, err = [x.decode('utf-8') for x in proc.communicate()]
+class Testers:
 
-        if proc.returncode:
-            cmd = 'git ' + ' '.join(args)
-            raise Exception(
-                "Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
-                % (cmd, err, out, proc.returncode), exit_code=proc.returncode)
-        return out
+    def __init__(self):
+        # read testers and collectors
+        # tester es findbugs, un script
+        # collector es un script que devuelve un valor numerico
+        print "Read Testers and Collectors"
 
 
 if __name__ == "__main__":
