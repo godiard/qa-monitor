@@ -73,11 +73,23 @@ class Testers:
         print self.processors
         self.collectors = self.data['collectors']
         print self.collectors
+        # verify if data and results directories exist
+        if not os.path.exists('data'):
+            os.mkdir('data')
+        if not os.path.exists('results'):
+            os.mkdir('results')
 
-    def execute_processors(self, directory, output):
+    def execute_processors(self, directory, output_path):
         for processor in self.processors:
-            out = _exec_command(directory, '../scripts/' + processor, output)
+            out = _exec_command(directory, '../scripts/' + processor,
+                                output_path)
             print out
+
+    def execute_collectors(self, directory, input_path):
+        for collector in self.collectors:
+            out = _exec_command(directory, '../scripts/' + collector['script'],
+                                input_path)
+            print 'collector ' + collector['id'] + ' = ' + out
 
 
 if __name__ == '__main__':
@@ -87,4 +99,6 @@ if __name__ == '__main__':
     git_hash = 'master'
     print "Repo dir " + repo.directory
     output_path = '../data/' + git_hash + '.xml'
-    testers.execute_processors(repo.directory, output_path)
+    if not os.path.exists(output_path):
+        testers.execute_processors(repo.directory, output_path)
+    testers.execute_collectors(repo.directory, output_path)
