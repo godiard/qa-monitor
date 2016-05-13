@@ -1,5 +1,6 @@
 import os
 from subprocess import Popen, STDOUT, PIPE
+import json
 
 MAX_DEPTH = 200
 
@@ -15,6 +16,10 @@ def _exec_command(path, *args):
 
     if proc.returncode:
         cmd = ' '.join(args)
+        print "COMMAND"
+        print cmd
+        print "OUTPUT"
+        print out
         raise Exception(
             "Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
             % (cmd, err, out, proc.returncode), exit_code=proc.returncode)
@@ -46,7 +51,7 @@ class Repository:
                                    '--pretty=format:%H|%aN|%s')
         self.log = []
         for line in log_output.split('\n'):
-            print line
+            # print line
             parts = line.split('|')
             commit_hash = parts[0]
             author = parts[1]
@@ -62,8 +67,22 @@ class Testers:
         # read testers and collectors
         # tester es findbugs, un script
         # collector es un script que devuelve un valor numerico
-        print "Read Testers and Collectors"
+        print "Read processors and Collectors"
+        self.data = json.load(open('./config.json'))
+        self.processors = self.data['processors']
+        print self.processors
+        self.collectors = self.data['collectors']
+        print self.collectors
 
+    def execute_processors(self, directory, output):
+        for processor in self.processors:
+            out = _exec_command(directory, "../scripts/" + processor, output)
+            print out
 
 if __name__ == "__main__":
     repo = Repository('../superclubs')
+
+    testers = Testers()
+    output = "master.xml"
+    print "Repo dir " + repo.directory
+    testers.execute_processors(repo.directory, output)

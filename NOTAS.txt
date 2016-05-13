@@ -25,7 +25,3 @@ Cantidad de @include en jsp
 [gonzalo@localhost superclubs]$ grep -r "@include" --include=*.jsp | wc
     314    1103   45698
 
-
-
-$ sudo dnf install python-gitapi
-

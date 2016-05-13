@@ -1,0 +1,32 @@
+{
+    "processors": ["findbugs.sh"],
+    "collectors": [
+        {
+            "id": "high_priority_bugs",
+            "titulo": "High priority bugs",
+            "script": "high-priority-bugs.sh"
+        },
+        {
+            "id": "all_bugs",
+            "titulo": "All bugs",
+            "script": "all-bugs.sh"
+        },
+        {
+            "id": "number_of_classes",
+            "titulo": "Number of classes",
+            "script": "number-of-classes.sh"
+        },
+        {
+            "id": "classes_without_errors",
+            "titulo": "Classes without errors",
+            "script": "classes-without-errors.sh"
+        },
+
+        {
+            "id": "bad_includes_jsp",
+            "titulo": "@includes in jsp",
+            "script": "bad-includes-jsp.sh"
+        }
+
+    ]
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <Project projectName="superclubs">
+    <Jar>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/cms.jar</Jar>
+    <Jar>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/sclubs.jar</Jar>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/jasperreports-3.0.0.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/gson-1.6.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/struts.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/systrip-client-1.0-SNAPSHOT.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/nemo-1.0.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/turisweb-nemo-nemoPruebas-1.0.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/turix_utiles.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/gds_client.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/webApplication/WEB-INF/lib/cms.jar</AuxClasspathEntry>
+    <SrcDir>/home/gonzalo/trinomio/sources/qa-monitor/superclubs/source</SrcDir>
+  </Project>
