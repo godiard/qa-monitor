@@ -16,12 +16,12 @@ def _exec_command(path, *args):
 
     if proc.returncode:
         cmd = ' '.join(args)
-        print "COMMAND"
+        print 'COMMAND'
         print cmd
-        print "OUTPUT"
+        print 'OUTPUT'
         print out
         raise Exception(
-            "Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
+            'Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s'
             % (cmd, err, out, proc.returncode), exit_code=proc.returncode)
     return out
 
@@ -67,7 +67,7 @@ class Testers:
         # read testers and collectors
         # tester es findbugs, un script
         # collector es un script que devuelve un valor numerico
-        print "Read processors and Collectors"
+        print 'Read processors and Collectors'
         self.data = json.load(open('./config.json'))
         self.processors = self.data['processors']
         print self.processors
@@ -76,13 +76,15 @@ class Testers:
 
     def execute_processors(self, directory, output):
         for processor in self.processors:
-            out = _exec_command(directory, "../scripts/" + processor, output)
+            out = _exec_command(directory, '../scripts/' + processor, output)
             print out
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     repo = Repository('../superclubs')
 
     testers = Testers()
-    output = "master.xml"
+    git_hash = 'master'
     print "Repo dir " + repo.directory
-    testers.execute_processors(repo.directory, output)
+    output_path = '../data/' + git_hash + '.xml'
+    testers.execute_processors(repo.directory, output_path)
