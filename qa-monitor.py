@@ -61,22 +61,22 @@ class Repository:
                       'subject': subject}
             self.log.append(commit)
 
-    def run_tests(self, testers):
+    def run_tests(self, tester):
         for n in range(MAX_DEPTH):
             commit_hash = self.log[n]['commit_hash']
             print "Testing commit " + commit_hash
             _exec_command(self.directory, 'git', 'checkout', commit_hash)
             output_path = '../data/' + commit_hash + '.xml'
             if not os.path.exists(output_path):
-                testers.execute_processors(self.directory, output_path)
-            testers.execute_collectors(self.directory, commit_hash,
-                                       output_path)
+                tester.execute_processors(self.directory, output_path)
+            tester.execute_collectors(self.directory, commit_hash,
+                                      output_path)
 
 
-class Testers:
+class Tester:
 
     def __init__(self):
-        # read testers and collectors
+        # read processors and collectors
         # tester es findbugs, un script
         # collector es un script que devuelve un valor numerico
         print 'Read processors and Collectors'
@@ -110,5 +110,5 @@ class Testers:
 
 if __name__ == '__main__':
     repo = Repository('git@gitlab.trinom.io:beagle/superclubs.git')
-    testers = Testers()
-    repo.run_tests(testers)
+    tester = Tester()
+    repo.run_tests(tester)
