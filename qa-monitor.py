@@ -42,6 +42,7 @@ class Repository:
         if not os.path.exists(self.directory):
             _exec_command('.', 'git', 'clone', url)
         else:
+            _exec_command(self.directory, 'git', 'checkout', 'master')
             _exec_command(self.directory, 'git', 'pull')
         self.read_log()
 
@@ -56,9 +57,20 @@ class Repository:
             commit_hash = parts[0]
             author = parts[1]
             subject = parts[2]
-            commit = {'hash': commit_hash, 'author': author,
+            commit = {'commit_hash': commit_hash, 'author': author,
                       'subject': subject}
             self.log.append(commit)
+
+    def run_tests(self, testers):
+        for n in range(MAX_DEPTH):
+            commit_hash = self.log[n]['commit_hash']
+            print "Testing commit " + commit_hash
+            _exec_command(self.directory, 'git', 'checkout', commit_hash)
+            output_path = '../data/' + commit_hash + '.xml'
+            if not os.path.exists(output_path):
+                testers.execute_processors(self.directory, output_path)
+            testers.execute_collectors(self.directory, commit_hash,
+                                       output_path)
 
 
 class Testers:
@@ -85,20 +97,18 @@ class Testers:
                                 output_path)
             print out
 
-    def execute_collectors(self, directory, input_path):
+    def execute_collectors(self, directory, commit_hash, input_path):
         for collector in self.collectors:
             out = _exec_command(directory, '../scripts/' + collector['script'],
                                 input_path)
             print 'collector ' + collector['id'] + ' = ' + out
+            if 'results' not in collector:
+                collector['results'] = []
+            collector['results'].append({'commit_hash': commit_hash,
+                                         'value': int(out)})
 
 
 if __name__ == '__main__':
-    repo = Repository('../superclubs')
-
+    repo = Repository('git@gitlab.trinom.io:beagle/superclubs.git')
     testers = Testers()
-    git_hash = 'master'
-    print "Repo dir " + repo.directory
-    output_path = '../data/' + git_hash + '.xml'
-    if not os.path.exists(output_path):
-        testers.execute_processors(repo.directory, output_path)
-    testers.execute_collectors(repo.directory, output_path)
+    repo.run_tests(testers)
