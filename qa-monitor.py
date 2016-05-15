@@ -67,7 +67,9 @@ class Repository:
             print "Testing commit " + commit_hash
             _exec_command(self.directory, 'git', 'checkout', commit_hash)
             output_path = '../data/' + commit_hash + '.xml'
-            if not os.path.exists(output_path):
+            # le quito un punto del princio porque el path es relativo a
+            # ./scripts/
+            if not os.path.exists(output_path.replace('..', '.')):
                 tester.execute_processors(self.directory, output_path)
             tester.execute_collectors(self.directory, commit_hash,
                                       output_path)
@@ -90,6 +92,7 @@ class Tester:
             os.mkdir('data')
         if not os.path.exists('results'):
             os.mkdir('results')
+        self.commits = []
 
     def execute_processors(self, directory, output_path):
         for processor in self.processors:
@@ -98,17 +101,93 @@ class Tester:
             print out
 
     def execute_collectors(self, directory, commit_hash, input_path):
+        self.commits.append(commit_hash)
         for collector in self.collectors:
             out = _exec_command(directory, '../scripts/' + collector['script'],
                                 input_path)
             print 'collector ' + collector['id'] + ' = ' + out
             if 'results' not in collector:
-                collector['results'] = []
-            collector['results'].append({'commit_hash': commit_hash,
-                                         'value': int(out)})
+                collector['results'] = {}
+            collector['results'][commit_hash] = int(out)
+
+
+class HtmlBuilder:
+
+    def __init__(self, tester):
+        head = """
+        <html>
+            <head>
+            <link rel="stylesheet" type="text/css" href="./c3.css"/>
+            <script type="text/javascript" src="./d3-3.5.6.min.js"></script>
+            <script type="text/javascript" src="./c3.js"></script>
+        """
+
+        script = """<script>
+                        function displayData(d, element) {
+                            alert("Commit " + commits[d.x]);
+                        };
+
+        """
+
+        for collector in tester.collectors:
+            data = "var " + collector['id'] + " = ['" + collector['id'] + "',"
+            for commit in tester.commits:
+                data = data + str(collector['results'][commit]) + ","
+            data = data + "];\n"
+            script += data
+
+        commits_array = "var commits = ["
+        for commit in tester.commits:
+            commits_array += "'" + commit + "',"
+
+        commits_array += "];\n"
+
+        script += commits_array
+
+        script += """
+            function showCharts() {
+                var chart = c3.generate({
+                data: {
+                    columns: [
+        """
+        for collector in tester.collectors:
+            script += collector['id'] + ","
+
+        script += """
+                    ],
+                    onclick: displayData
+                },
+                axis: {
+                    x: {
+                        type: 'category',
+                        categories: commits,
+                        show: false
+                    }
+                }
+            });
+            };
+        </script>
+        """
+
+        body = """
+            </head>
+            <body onload="showCharts()">
+                <div class='container'>
+                <h1 class='title'>Superclubs</h1>
+                <div class='chart'>
+                <div id='chart'></div>
+                </div>
+            </body>
+        </html>"""
+
+        with open('web/index.html', 'w') as f:
+            f.write(head)
+            f.write(script)
+            f.write(body)
 
 
 if __name__ == '__main__':
     repo = Repository('git@gitlab.trinom.io:beagle/superclubs.git')
     tester = Tester()
     repo.run_tests(tester)
+    html_builder = HtmlBuilder(tester)
