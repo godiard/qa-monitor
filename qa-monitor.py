@@ -114,6 +114,11 @@ class Tester:
 class HtmlBuilder:
 
     def __init__(self, tester):
+
+        # revert the commits order, we want show the last commits
+        # at the right
+        commits = list(reversed(tester.commits))
+
         head = """
         <html>
             <head>
@@ -122,22 +127,27 @@ class HtmlBuilder:
             <script type="text/javascript" src="./c3.js"></script>
         """
 
+        gitlab_url = 'http://gitlab.trinom.io/beagle/superclubs/commit'
+
         script = """<script>
                         function displayData(d, element) {
-                            alert("Commit " + commits[d.x]);
+                            var commit_hash = commits[d.x];
+                            var url = '%s/' + commit_hash;
+                            var win = window.open(url, '_blank');
+                            win.focus();
                         };
 
-        """
+        """ % gitlab_url
 
         for collector in tester.collectors:
             data = "var " + collector['id'] + " = ['" + collector['id'] + "',"
-            for commit in tester.commits:
+            for commit in commits:
                 data = data + str(collector['results'][commit]) + ","
             data = data + "];\n"
             script += data
 
         commits_array = "var commits = ["
-        for commit in tester.commits:
+        for commit in commits:
             commits_array += "'" + commit + "',"
 
         commits_array += "];\n"
