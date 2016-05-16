@@ -146,13 +146,7 @@ class HtmlBuilder:
             data = data + "];\n"
             script += data
 
-        commits_array = "var commits = ["
-        for commit in commits:
-            commits_array += "'" + commit + "',"
-
-        commits_array += "];\n"
-
-        script += commits_array
+        script += "var commits = " + json.dumps(commits) + ";\n"
 
         script += """
             function showCharts() {
