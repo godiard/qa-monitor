@@ -150,25 +150,26 @@ class HtmlBuilder:
 
         script += """
             function showCharts() {
-                var chart = c3.generate({
-                data: {
-                    columns: [
         """
         for collector in tester.collectors:
-            script += collector['id'] + ","
+            script += """
+                    var chart_%s = c3.generate({
+                    data: {
+                        columns: [%s],
+                        onclick: displayData
+                    },
+                    axis: {
+                        x: {
+                            type: 'category',
+                            categories: commits,
+                            show: false
+                        }
+                    },
+                    bindto: '#%s'
+            });
+            """ % (collector['id'], collector['id'], collector['id'])
 
         script += """
-                    ],
-                    onclick: displayData
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        categories: commits,
-                        show: false
-                    }
-                }
-            });
             };
         </script>
         """
@@ -176,11 +177,17 @@ class HtmlBuilder:
         body = """
             </head>
             <body onload="showCharts()">
+                """
+        for collector in tester.collectors:
+            body += """
                 <div class='container'>
-                <h1 class='title'>Superclubs</h1>
+                <h1 class='title'>%s</h1>
                 <div class='chart'>
-                <div id='chart'></div>
+                <div id='%s'></div>
                 </div>
+                """ % (collector['titulo'], collector['id'])
+
+        body += """
             </body>
         </html>"""
 
