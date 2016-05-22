@@ -163,7 +163,14 @@ class HtmlBuilder:
                             type: 'category',
                             categories: commits,
                             show: false
-                        }
+                        },
+                        y: {
+                            tick: {
+                                format: function (d) {
+                                    return (parseInt(d) == d) ? d : null;
+                                }
+                            }
+                         }
                     },
                     bindto: '#%s'
             });
