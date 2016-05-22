@@ -108,7 +108,7 @@ class Tester:
             print 'collector ' + collector['id'] + ' = ' + out
             if 'results' not in collector:
                 collector['results'] = {}
-            collector['results'][commit_hash] = int(out)
+            collector['results'][commit_hash] = [int(i) for i in out.split()]
 
 
 class HtmlBuilder:
@@ -140,11 +140,28 @@ class HtmlBuilder:
         """ % gitlab_url
 
         for collector in tester.collectors:
-            data = "var " + collector['id'] + " = ['" + collector['id'] + "',"
+            # how many numeric values returns the collector
+            values = 1
+            if 'values' in collector:
+                values = collector['values']
+
+            if 'labels' not in collector:
+                collector['labels'] = [collector['id']]
+
+            collector_data = []
+            for n in range(values):
+                collector_data.append([])
+
+            for n in range(values):
+                collector_data[n].append(collector['labels'][n])
+
             for commit in commits:
-                data = data + str(collector['results'][commit]) + ","
-            data = data + "];\n"
-            script += data
+                for n in range(values):
+                    collector_data[n].append(collector['results'][commit][n])
+
+            for n in range(values):
+                script += "var %s_%s = %s;\n" % (
+                    collector['id'], n, json.dumps(collector_data[n]))
 
         script += "var commits = " + json.dumps(commits) + ";\n"
 
@@ -152,8 +169,18 @@ class HtmlBuilder:
             function showCharts() {
         """
         for collector in tester.collectors:
+
+            values = 1
+            if 'values' in collector:
+                values = collector['values']
+            columns = ''
+            for n in range(values):
+                columns += collector['id'] + '_' + str(n) + ','
+            columns = columns[:len(columns)-1]
+
+
             script += """
-                    var chart_%s = c3.generate({
+            var chart_%s = c3.generate({
                     data: {
                         columns: [%s],
                         onclick: displayData
@@ -174,7 +201,7 @@ class HtmlBuilder:
                     },
                     bindto: '#%s'
             });
-            """ % (collector['id'], collector['id'], collector['id'])
+            """ % (collector['id'], columns, collector['id'])
 
         script += """
             };
