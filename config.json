@@ -22,6 +22,18 @@
             "id": "bad_includes_jsp",
             "titulo": "@includes in jsp",
             "script": "bad-includes-jsp.sh"
+        },
+        {
+            "id": "todo_in_code",
+            "titulo": "TODO: comments",
+            "script": "todo.sh"
+        },
+        {
+            "id": "get_by_query",
+            "titulo": "Uso de Db.getByQuery",
+            "script": "get-by-query.sh",
+            "values": 4,
+            "labels": ["getByQuery", "getUniqueByQuery","getByQueryWithParams", "getUniqueByQueryWithParams"]
         }
 
     ]
