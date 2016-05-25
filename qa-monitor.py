@@ -62,11 +62,15 @@ class Repository:
             self.log.append(commit)
 
     def run_tests(self, tester):
+        # verify if data and results directories exist
+        data_directory = 'data_' + self.directory
+        if not os.path.exists(data_directory):
+            os.mkdir(data_directory)
         for n in range(MAX_DEPTH):
             commit_hash = self.log[n]['commit_hash']
             print "Testing commit " + commit_hash
             _exec_command(self.directory, 'git', 'checkout', commit_hash)
-            output_path = '../data/' + commit_hash + '.xml'
+            output_path = '../' + data_directory +  '/' + commit_hash + '.xml'
             # le quito un punto del princio porque el path es relativo a
             # ./scripts/
             if not os.path.exists(output_path.replace('..', '.')):
@@ -87,11 +91,6 @@ class Tester:
         print self.processors
         self.collectors = self.data['collectors']
         print self.collectors
-        # verify if data and results directories exist
-        if not os.path.exists('data'):
-            os.mkdir('data')
-        if not os.path.exists('results'):
-            os.mkdir('results')
         self.commits = []
 
     def execute_processors(self, directory, output_path):
