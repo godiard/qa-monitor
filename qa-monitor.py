@@ -140,7 +140,7 @@ class Tester:
 
 class HtmlBuilder:
 
-    def __init__(self, tester):
+    def __init__(self, tester, project_name, gitlab_url):
 
         # revert the commits order, we want show the last commits
         # at the right
@@ -153,8 +153,6 @@ class HtmlBuilder:
             <script type="text/javascript" src="./d3-3.5.6.min.js"></script>
             <script type="text/javascript" src="./c3.js"></script>
         """
-
-        gitlab_url = 'http://gitlab.trinom.io/beagle/superclubs/commit'
 
         script = """<script>
                         function displayData(d, element) {
@@ -251,14 +249,17 @@ class HtmlBuilder:
             </body>
         </html>"""
 
-        with open('web/index.html', 'w') as f:
+        with open('web/%s.html' % project_name, 'w') as f:
             f.write(head)
             f.write(script)
             f.write(body)
 
 
 if __name__ == '__main__':
-    repo = Repository('git@gitlab.trinom.io:beagle/superclubs.git')
-    tester = Tester()
-    repo.run_tests(tester)
-    html_builder = HtmlBuilder(tester)
+    projects = json.load(open('./projects.json'))
+    for project in projects:
+        repo = Repository(project['repository'])
+        tester = Tester()
+        repo.run_tests(tester)
+        html_builder = HtmlBuilder(tester, project['name'],
+                                   project['gitlab_commit_url'])
