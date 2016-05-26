@@ -78,7 +78,7 @@ class Repository:
             commit_hash = self.log[n]['commit_hash']
             print "Testing commit " + commit_hash
             _exec_command(self.directory, 'git', 'checkout', commit_hash)
-            output_path = '../' + data_directory +  '/' + commit_hash + '.xml'
+            output_path = '../' + data_directory + '/' + commit_hash + '.xml'
             # le quito un punto del princio porque el path es relativo a
             # ./scripts/
             if not os.path.exists(output_path.replace('..', '.')):
@@ -92,6 +92,7 @@ class Repository:
                 results[commit_hash] = tester.save_data(commit_hash)
 
         json.dump(results, open(collectors_data_path, 'w'))
+
 
 class Tester:
 
@@ -135,6 +136,7 @@ class Tester:
         for collector in self.collectors:
             results[collector['id']] = collector['results'][commit_hash]
         return results
+
 
 class HtmlBuilder:
 
@@ -202,7 +204,6 @@ class HtmlBuilder:
             for n in range(values):
                 columns += collector['id'] + '_' + str(n) + ','
             columns = columns[:len(columns)-1]
-
 
             script += """
             var chart_%s = c3.generate({
