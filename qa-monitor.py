@@ -66,6 +66,14 @@ class Repository:
         data_directory = 'data_' + self.directory
         if not os.path.exists(data_directory):
             os.mkdir(data_directory)
+
+        collectors_data_path = os.path.join(
+            data_directory, 'collectors_data.json')
+
+        results = {}
+        if os.path.exists(collectors_data_path):
+            results = json.load(open(collectors_data_path))
+
         for n in range(MAX_DEPTH):
             commit_hash = self.log[n]['commit_hash']
             print "Testing commit " + commit_hash
@@ -75,9 +83,15 @@ class Repository:
             # ./scripts/
             if not os.path.exists(output_path.replace('..', '.')):
                 tester.execute_processors(self.directory, output_path)
-            tester.execute_collectors(self.directory, commit_hash,
-                                      output_path)
+            if commit_hash in results:
+                tester.load_data(commit_hash, results[commit_hash])
+            else:
+                tester.execute_collectors(self.directory, commit_hash,
+                                          output_path)
 
+                results[commit_hash] = tester.save_data(commit_hash)
+
+        json.dump(results, open(collectors_data_path, 'w'))
 
 class Tester:
 
@@ -109,6 +123,18 @@ class Tester:
                 collector['results'] = {}
             collector['results'][commit_hash] = [int(i) for i in out.split()]
 
+    def load_data(self, commit_hash, results):
+        self.commits.append(commit_hash)
+        for collector in self.collectors:
+            if 'results' not in collector:
+                collector['results'] = {}
+            collector['results'][commit_hash] = results[collector['id']]
+
+    def save_data(self, commit_hash):
+        results = {}
+        for collector in self.collectors:
+            results[collector['id']] = collector['results'][commit_hash]
+        return results
 
 class HtmlBuilder:
 
