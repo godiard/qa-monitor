@@ -2,6 +2,10 @@
     {"name": "superclubs",
      "repository": "git@gitlab.trinom.io:beagle/superclubs.git",
      "gitlab_commit_url": "http://gitlab.trinom.io/beagle/superclubs/commit"
+    },
+    {"name": "buquebus",
+     "repository": "git@gitlab.trinom.io:beagle/buquebus.git",
+     "gitlab_commit_url": "http://gitlab.trinom.io/beagle/buquebus/commit"
     }
 
 ]
