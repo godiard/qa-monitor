@@ -174,19 +174,27 @@ class HtmlBuilder:
                 collector['labels'] = [collector['id']]
 
             collector_data = []
+            collector_interesting_points = []
             for n in range(values):
                 collector_data.append([])
 
             for n in range(values):
                 collector_data[n].append(collector['labels'][n])
 
-            for commit in commits:
+            for index, commit in enumerate(commits):
                 for n in range(values):
                     collector_data[n].append(collector['results'][commit][n])
+                    if index > 0:
+                        prev_commit = commits[index - 1]
+                        if collector['results'][commit][n] != \
+                                collector['results'][prev_commit][n]:
+                            collector_interesting_points.append(index)
 
             for n in range(values):
                 script += "var %s_%s = %s;\n" % (
                     collector['id'], n, json.dumps(collector_data[n]))
+            script += "var %s_visible_points = %s;\n" % (
+                collector['id'], json.dumps(collector_interesting_points))
 
         script += "var commits = " + json.dumps(commits) + ";\n"
 
@@ -207,7 +215,17 @@ class HtmlBuilder:
             var chart_%s = c3.generate({
                     data: {
                         columns: [%s],
-                        onclick: displayData
+                        onclick: displayData,
+                        color: function(color, d){
+                            if (d.index == undefined) {
+                                return color;
+                            }
+                            if (%s_visible_points.indexOf(d.index) >= 0) {
+                                return "red"
+                            }
+                            return "transparent"
+                        }
+
                     },
                     axis: {
                         x: {
@@ -225,7 +243,7 @@ class HtmlBuilder:
                     },
                     bindto: '#%s'
             });
-            """ % (collector['id'], columns, collector['id'])
+            """ % (collector['id'], columns, collector['id'], collector['id'])
 
         script += """
             };
