@@ -32,8 +32,8 @@
             "id": "get_by_query",
             "titulo": "Uso de Db.getByQuery",
             "script": "get-by-query.sh",
-            "values": 4,
-            "labels": ["getByQuery", "getUniqueByQuery","getByQueryWithParams", "getUniqueByQueryWithParams"]
+            "values": 6,
+            "labels": ["getByQuery", "getUniqueByQuery", "executeQuery", "getByQueryWithParams", "getUniqueByQueryWithParams", "executeQueryWithParams"]
         }
 
     ]
