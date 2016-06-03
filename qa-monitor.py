@@ -159,6 +159,17 @@ class HtmlBuilder:
         <html>
             <head>
             <link rel="stylesheet" type="text/css" href="./c3.css"/>
+            <style>
+                .title {
+                    font-family: sans-serif;
+                    padding: 30px 0 0 20px;
+                }
+                .chart {
+                    width: 95%;
+                    margin-left: 20px;
+                    background-color: #eeeeee;
+                }
+            </style>
             <script type="text/javascript" src="./d3-3.5.6.min.js"></script>
             <script type="text/javascript" src="./c3.js"></script>
         """
@@ -263,10 +274,11 @@ class HtmlBuilder:
             </head>
             <body onload="showCharts()">
                 """
+        body += "<h1 class='title'>%s</h1>" % project_name
         for collector in tester.collectors:
             body += """
                 <div class='container'>
-                <h1 class='title'>%s</h1>
+                <h2 class='title'>%s</h2>
                 <div class='chart'>
                 <div id='%s'></div>
                 </div>
