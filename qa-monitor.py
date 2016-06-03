@@ -74,6 +74,15 @@ class Repository:
         if os.path.exists(collectors_data_path):
             results = json.load(open(collectors_data_path))
 
+        # count how many new commits there are
+        new_commits = 0
+        for n in range(MAX_DEPTH):
+            commit_hash = self.log[n]['commit_hash']
+            output_path = './' + data_directory + '/' + commit_hash + '.xml'
+            if not os.path.exists(output_path):
+                new_commits = new_commits + 1
+        print "NEW COMMITS: %d" % new_commits
+
         for n in range(MAX_DEPTH):
             commit_hash = self.log[n]['commit_hash']
             print "Testing commit " + commit_hash
