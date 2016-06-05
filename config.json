@@ -1,4 +1,5 @@
 {
+    "output_path": "/usr/share/nginx/html/qa-monitor",
     "processors": ["findbugs.sh"],
     "collectors": [
         {

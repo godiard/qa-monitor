@@ -288,7 +288,9 @@ class HtmlBuilder:
             </body>
         </html>"""
 
-        with open('web/%s.html' % project_name, 'w') as f:
+        output_path = os.path.join(tester.data['output_path'],
+                                   '%s.html' % project_name)
+        with open(output_path, 'w') as f:
             f.write(head)
             f.write(script)
             f.write(body)
