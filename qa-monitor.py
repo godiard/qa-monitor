@@ -1,4 +1,5 @@
 import os
+import shutil
 from subprocess import Popen, STDOUT, PIPE
 import json
 
@@ -150,10 +151,16 @@ class Tester:
 class HtmlBuilder:
 
     def __init__(self, tester, project_name, gitlab_url):
+        self.tester = tester
+        self.project_name = project_name
+        self.gitlab_url = gitlab_url
+        self.create_page()
+        self.copy_web_files()
 
+    def create_page(self):
         # revert the commits order, we want show the last commits
         # at the right
-        commits = list(reversed(tester.commits))
+        commits = list(reversed(self.tester.commits))
 
         head = """
         <html>
@@ -182,9 +189,9 @@ class HtmlBuilder:
                             win.focus();
                         };
 
-        """ % gitlab_url
+        """ % self.gitlab_url
 
-        for collector in tester.collectors:
+        for collector in self.tester.collectors:
             # how many numeric values returns the collector
             values = 1
             if 'values' in collector:
@@ -221,7 +228,7 @@ class HtmlBuilder:
         script += """
             function showCharts() {
         """
-        for collector in tester.collectors:
+        for collector in self.tester.collectors:
 
             values = 1
             if 'values' in collector:
@@ -274,8 +281,8 @@ class HtmlBuilder:
             </head>
             <body onload="showCharts()">
                 """
-        body += "<h1 class='title'>%s</h1>" % project_name
-        for collector in tester.collectors:
+        body += "<h1 class='title'>%s</h1>" % self.project_name
+        for collector in self.tester.collectors:
             body += """
                 <div class='container'>
                 <h2 class='title'>%s</h2>
@@ -288,12 +295,18 @@ class HtmlBuilder:
             </body>
         </html>"""
 
-        output_path = os.path.join(tester.data['output_path'],
-                                   '%s.html' % project_name)
+        output_path = os.path.join(self.tester.data['output_path'],
+                                   '%s.html' % self.project_name)
         with open(output_path, 'w') as f:
             f.write(head)
             f.write(script)
             f.write(body)
+
+    def copy_web_files(self):
+        output_path = self.tester.data['output_path']
+        for file_name in os.listdir('web'):
+            shutil.copy(os.path.join('web', file_name),
+                        output_path)
 
 
 if __name__ == '__main__':
