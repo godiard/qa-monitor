@@ -210,12 +210,15 @@ class HtmlBuilder:
 
             for index, commit in enumerate(commits):
                 for n in range(values):
-                    collector_data[n].append(collector['results'][commit][n])
-                    if index > 0:
-                        prev_commit = commits[index - 1]
-                        if collector['results'][commit][n] != \
-                                collector['results'][prev_commit][n]:
-                            collector_interesting_points.append(index)
+                    try:
+                        collector_data[n].append(collector['results'][commit][n])
+                        if index > 0:
+                            prev_commit = commits[index - 1]
+                            if collector['results'][commit][n] != \
+                                    collector['results'][prev_commit][n]:
+                                collector_interesting_points.append(index)
+                    except:
+                        print "Can't read value"
 
             for n in range(values):
                 script += "var %s_%s = %s;\n" % (
