@@ -121,7 +121,7 @@ class Tester:
     def execute_processors(self, directory, output_path):
         for processor in self.processors:
             out = _exec_command(directory, '../scripts/' + processor,
-                                output_path)
+                                output_path, directory)
             print out
 
     def execute_collectors(self, directory, commit_hash, input_path):

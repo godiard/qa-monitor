@@ -1,0 +1,7 @@
+<Project projectName="buquebus">
+  <Jar>../buquebus/webApplication/WEB-INF/classes</Jar>
+  <AuxClasspathEntry>../lib/turix_utiles.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/struts.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/sclubs.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/cms.jar</AuxClasspathEntry>
+</Project>
