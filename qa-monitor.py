@@ -214,7 +214,8 @@ class HtmlBuilder:
             for index, commit in enumerate(commits):
                 for n in range(values):
                     try:
-                        collector_data[n].append(collector['results'][commit][n])
+                        collector_data[n].append(
+                            collector['results'][commit][n])
                         if index > 0:
                             prev_commit = commits[index - 1]
                             if collector['results'][commit][n] != \
