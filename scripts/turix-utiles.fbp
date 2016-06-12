@@ -1,0 +1,4 @@
+<Project projectName="turix-utiles">
+  <Jar>../turix-utiles/turix_utiles.jar</Jar>
+  <SrcDir>../turix-utiles/src</SrcDir>
+</Project>
