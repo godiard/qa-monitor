@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 from subprocess import Popen, STDOUT, PIPE
 import json
@@ -29,11 +30,12 @@ def _exec_command(path, *args):
 
 class Repository:
 
-    def __init__(self, url):
+    def __init__(self, url, update):
         """Create a Repo object from the repository at url"""
         # url = git@gitlab.trinom.io:beagle/superclubs.git
         # url = git@github.com:godiard/typing-turtle-activity.git
         self.url = url
+        self._update = update
 
         self.directory = self.url[self.url.rfind('/')+1:]
         if '.git'in self.directory:
@@ -44,7 +46,8 @@ class Repository:
             _exec_command('.', 'git', 'clone', url)
         else:
             _exec_command(self.directory, 'git', 'checkout', 'master')
-            _exec_command(self.directory, 'git', 'pull')
+            if self._update:
+                _exec_command(self.directory, 'git', 'pull')
         self.read_log()
 
     def read_log(self):
@@ -313,9 +316,16 @@ class HtmlBuilder:
 
 
 if __name__ == '__main__':
+
+    update = True
+
+    for arg in sys.argv:
+        if arg in ['-n', '--no-pull']:
+            update = False
+
     projects = json.load(open('./projects.json'))
     for project in projects:
-        repo = Repository(project['repository'])
+        repo = Repository(project['repository'], update)
         tester = Tester()
         repo.run_tests(tester)
         html_builder = HtmlBuilder(tester, project['name'],
