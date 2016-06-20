@@ -5,7 +5,8 @@
         {
             "id": "high_priority_bugs",
             "titulo": "FindBugs: High priority bugs",
-            "script": "high-priority-bugs.sh"
+            "script": "high-priority-bugs.sh",
+            "script_poi": "high-prio-bug-diff.sh"
         },
         {
             "id": "all_bugs",
