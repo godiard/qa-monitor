@@ -230,6 +230,9 @@ class HtmlBuilder:
             script += "var %s_visible_points = %s;\n" % (
                 collector['id'], json.dumps(collector_interesting_points))
 
+            self.point_of_interest_report(collector, commits,
+                                          collector_interesting_points)
+
         script += "var commits = " + json.dumps(commits) + ";\n"
 
         script += """
@@ -245,11 +248,24 @@ class HtmlBuilder:
                 columns += collector['id'] + '_' + str(n) + ','
             columns = columns[:len(columns)-1]
 
+            onclick_function = 'displayData'
+            if 'script_poi' in collector:
+                # the on click function is replaced to show the local page
+                # to show the differences
+                onclick_function = """
+
+                        function (d, element) {
+                            var commit_hash = commits[d.x];
+                            var url = './%s-%s-' + commit_hash + '.html';
+                            var win = window.open(url, '_blank');
+                            win.focus();
+                        }""" % (self.project_name, collector['id'])
+
             script += """
             var chart_%s = c3.generate({
                     data: {
                         columns: [%s],
-                        onclick: displayData,
+                        onclick: %s,
                         color: function(color, d){
                             if (d.index == undefined) {
                                 return color;
@@ -277,7 +293,8 @@ class HtmlBuilder:
                     },
                     bindto: '#%s'
             });
-            """ % (collector['id'], columns, collector['id'], collector['id'])
+            """ % (collector['id'], columns, onclick_function, collector['id'],
+                   collector['id'])
 
         script += """
             };
@@ -314,6 +331,46 @@ class HtmlBuilder:
         for file_name in os.listdir('web'):
             shutil.copy(os.path.join('web', file_name),
                         output_path)
+
+    def point_of_interest_report(self, collector, commits, poi_array):
+        # commits: the list of commits in the graph,
+        # are sorted in reversed order
+        # poi_array: list of int with order in commits array
+        # of changes in the values
+
+        # verify if the collector have a script configured
+        script = None
+        if 'script_poi' in collector:
+            script = collector['script_poi']
+        else:
+            return
+        for order in poi_array:
+            new_commit = commits[order]
+            output_path = os.path.join(
+                self.tester.data['output_path'],
+                '%s-%s-%s.html' % (self.project_name, collector['id'],
+                                   new_commit))
+            if os.path.exists(output_path):
+                continue
+
+            if order > 0:
+                last_commit = commits[order - 1]
+                print 'COMMITS %s %s' % (last_commit, new_commit)
+                out = _exec_command(
+                    self.project_name, '../scripts/' + script,
+                    '../data_%s/%s.xml' % (self.project_name, last_commit),
+                    '../data_%s/%s.xml' % (self.project_name, new_commit))
+
+                html = """
+                <html>
+                    <body>
+                    <h1>Commit <a href="%s">%s</a></h1>
+                    <pre>%s</pre>
+                    </body>
+                </html>""" % (self.gitlab_url + '/' + new_commit,
+                              new_commit, out)
+                with open(output_path, 'w') as f:
+                    f.write(html)
 
 
 if __name__ == '__main__':
