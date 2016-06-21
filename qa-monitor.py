@@ -53,7 +53,8 @@ class Repository:
     def read_log(self):
         # Read the log
         log_output = _exec_command(self.directory, 'git', 'log',
-                                   '--pretty=format:%H|%aN|%s')
+                                   '--pretty=format:%H|%aN|%s',
+                                   '--simplify-merges')
         self.log = []
         for line in log_output.split('\n'):
             # print line
