@@ -90,16 +90,17 @@ class Repository:
 
         for n in range(MAX_DEPTH):
             commit_hash = self.log[n]['commit_hash']
-            print "Testing commit " + commit_hash
-            _exec_command(self.directory, 'git', 'checkout', commit_hash)
-            output_path = '../' + data_directory + '/' + commit_hash + '.xml'
-            # le quito un punto del princio porque el path es relativo a
-            # ./scripts/
-            if not os.path.exists(output_path.replace('..', '.')):
-                tester.execute_processors(self.directory, output_path)
             if commit_hash in results:
                 tester.load_data(commit_hash, results[commit_hash])
             else:
+                print "Testing commit " + commit_hash
+                _exec_command(self.directory, 'git', 'checkout', commit_hash)
+                output_path = '../%s/%s.xml' % (data_directory, commit_hash)
+                # le quito un punto del principio porque el path es relativo a
+                # ./scripts/
+                if not os.path.exists(output_path.replace('..', '.')):
+                    tester.execute_processors(self.directory, output_path)
+
                 tester.execute_collectors(self.directory, commit_hash,
                                           output_path)
 
