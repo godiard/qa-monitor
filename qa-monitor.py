@@ -3,6 +3,7 @@ import sys
 import shutil
 from subprocess import Popen, STDOUT, PIPE
 import json
+import time
 
 MAX_DEPTH = 200
 
@@ -323,6 +324,7 @@ class HtmlBuilder:
         body += "<p><a target='_blank' " + \
             "href='./%s.txt'>Last Findbugs report txt file</a></p>" % \
             self.project_name
+        body += "<p>Generated: %s</p>" % time.strftime('%d/%b/%Y %H:%M')
 
         for collector in self.tester.collectors:
             body += """
