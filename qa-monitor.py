@@ -108,6 +108,13 @@ class Repository:
 
         json.dump(results, open(collectors_data_path, 'w'))
 
+        # convert the last findbugs file to text
+        out = _exec_command(
+            '.', '../tools/findbugs-3.0.1/bin/convertXmlToText',
+            './%s/%s.xml' % (data_directory, self.log[0]['commit_hash']))
+        with open('%s/last_report.txt' % data_directory, 'w') as f:
+            f.write(out)
+
 
 class Tester:
 
@@ -310,8 +317,11 @@ class HtmlBuilder:
                 """
         body += "<h1 class='title'>%s</h1>" % self.project_name
         body += "<div class='container'>"
-        body += "<a target='_blank' " + \
-            "href='./%s.xml'>Last Findbugs xml file</a>" % \
+        body += "<p><a target='_blank' " + \
+            "href='./%s.xml'>Last Findbugs xml file</a></p>" % \
+            self.project_name
+        body += "<p><a target='_blank' " + \
+            "href='./%s.txt'>Last Findbugs report txt file</a></p>" % \
             self.project_name
 
         for collector in self.tester.collectors:
@@ -346,6 +356,10 @@ class HtmlBuilder:
                                               self.tester.commits[0])
         destination = '%s/%s.xml' % (output_path, self.project_name)
         shutil.copyfile(findbugs_file, destination)
+
+        txt_report_file = './data_%s/last_report.txt' % (self.project_name)
+        destination = '%s/%s.txt' % (output_path, self.project_name)
+        shutil.copyfile(txt_report_file, destination)
 
     def point_of_interest_report(self, collector, commits, poi_array):
         # commits: the list of commits in the graph,
