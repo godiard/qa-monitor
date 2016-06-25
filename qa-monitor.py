@@ -161,6 +161,7 @@ class HtmlBuilder:
         self.gitlab_url = gitlab_url
         self.create_page()
         self.copy_web_files()
+        self.copy_findbugs_files()
 
     def create_page(self):
         # revert the commits order, we want show the last commits
@@ -308,9 +309,13 @@ class HtmlBuilder:
             <body onload="showCharts()">
                 """
         body += "<h1 class='title'>%s</h1>" % self.project_name
+        body += "<div class='container'>"
+        body += "<a target='_blank' " + \
+            "href='./%s.xml'>Last Findbugs xml file</a>" % \
+            self.project_name
+
         for collector in self.tester.collectors:
             body += """
-                <div class='container'>
                 <h2 class='title'>%s</h2>
                 <div class='chart'>
                 <div id='%s'></div>
@@ -318,6 +323,7 @@ class HtmlBuilder:
                 """ % (collector['titulo'], collector['id'])
 
         body += """
+                </div>
             </body>
         </html>"""
 
@@ -333,6 +339,13 @@ class HtmlBuilder:
         for file_name in os.listdir('web'):
             shutil.copy(os.path.join('web', file_name),
                         output_path)
+
+    def copy_findbugs_files(self):
+        output_path = self.tester.data['output_path']
+        findbugs_file = './data_%s/%s.xml' % (self.project_name,
+                                              self.tester.commits[0])
+        destination = '%s/%s.xml' % (output_path, self.project_name)
+        shutil.copyfile(findbugs_file, destination)
 
     def point_of_interest_report(self, collector, commits, poi_array):
         # commits: the list of commits in the graph,
