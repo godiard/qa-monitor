@@ -1,0 +1,4 @@
+<Project projectName="fact-electronica-2">
+  <Jar>../fact-electronica-2/fc-electronica.jar</Jar>
+  <SrcDir>../fact-electronica-2/src</SrcDir>
+</Project>

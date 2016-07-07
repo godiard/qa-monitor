@@ -3,6 +3,10 @@
      "repository": "git@gitlab.trinom.io:beagle/turix-utiles.git",
      "gitlab_commit_url": "http://gitlab.trinom.io/beagle/turix-utiles/commit"
     },
+    {"name": "fact-electronica-2",
+     "repository": "git@gitlab.trinom.io:beagle/fact-electronica-2.git",
+     "gitlab_commit_url": "http://gitlab.trinom.io/beagle/fact-electronica-2/commit"
+    },
     {"name": "superclubs",
      "repository": "git@gitlab.trinom.io:beagle/superclubs.git",
      "gitlab_commit_url": "http://gitlab.trinom.io/beagle/superclubs/commit"
