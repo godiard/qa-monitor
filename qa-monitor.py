@@ -90,7 +90,7 @@ class Repository:
                 new_commits = new_commits + 1
         print "NEW COMMITS: %d" % new_commits
 
-        for n in list(range(depth)):
+        for n in range(depth):
             commit_hash = self.log[n]['commit_hash']
             output_path = '../%s/%s.xml' % (data_directory, commit_hash)
             if commit_hash in results and os.path.exists(
