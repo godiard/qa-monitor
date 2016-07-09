@@ -95,6 +95,7 @@ class Repository:
             output_path = '../%s/%s.xml' % (data_directory, commit_hash)
             if commit_hash in results and os.path.exists(
                     output_path.replace('..', '.')):
+                print "Loading data commit " + commit_hash
                 tester.load_data(commit_hash, results[commit_hash])
             else:
                 print "Testing commit " + commit_hash
@@ -246,6 +247,7 @@ class HtmlBuilder:
                                 collector_interesting_points.append(index)
                     except:
                         print "Can't read value"
+                        collector_data[n].append(None)
 
             for n in range(values):
                 script += "var %s_%s = %s;\n" % (
