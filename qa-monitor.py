@@ -111,6 +111,10 @@ class Repository:
 
         json.dump(results, open(collectors_data_path, 'w'))
 
+        # get master and compile, to avoid dependency errors in other projects
+        _exec_command(self.directory, 'git', 'checkout', 'master')
+        _exec_command(self.directory, '../../ant.sh')
+
         # convert the last findbugs file to text
         xml_data_path = './%s/%s.xml' % (data_directory,
                                          self.log[0]['commit_hash'])
