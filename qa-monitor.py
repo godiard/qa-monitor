@@ -240,14 +240,17 @@ class HtmlBuilder:
                     try:
                         collector_data[n].append(
                             collector['results'][commit][n])
+                    except:
+                        print "Can't read value"
+                        collector_data[n].append(None)
+                    try:
                         if index > 0:
                             prev_commit = commits[index - 1]
                             if collector['results'][commit][n] != \
                                     collector['results'][prev_commit][n]:
                                 collector_interesting_points.append(index)
                     except:
-                        print "Can't read value"
-                        collector_data[n].append(None)
+                        print "Can't compare point of interest"
 
             for n in range(values):
                 script += "var %s_%s = %s;\n" % (
