@@ -37,13 +37,6 @@
             "script": "get-by-query.sh",
             "values": 6,
             "labels": ["getByQuery", "getUniqueByQuery", "executeQuery", "getByQueryWithParams", "getUniqueByQueryWithParams", "executeQueryWithParams"]
-        },
-        {
-            "id": "action",
-            "titulo": "LookupDispatchAction vs DispatchAction",
-            "script": "action.sh",
-            "values": 2,
-            "labels": ["DispatchAction", "LookupDispatchAction"]
         }
 
     ]
