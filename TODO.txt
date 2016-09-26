@@ -1,0 +1,92 @@
+TODO:
+
+DONE:
+* Grabar resultados de los collectors en un json para no tener que recalcular cada vez
+* Multiples proyectos
+* Graficos: eliminar puntos sin cambios? (probar con array de puntos e interes)
+* Agregr home estática, poner logos.
+* Hacer relativos los paths del .fbp (ya está en la vm)
+* El .fbp se tiene que pasar por parametro
+* Agregar .fbp para buquebus y reprocesar
+* Hacer que los collectors graben salida para permitir ver diferencias entre commits
+* Mostrar diferencias cuando es posible
+
+
+Instalación en imagen CentOS
+----------------------------
+
+Uso /home/gonzalo/Downloads/CentOS-7-x86_64-Minimal-1511.iso
+En boxes, asegurarse de que la red esté habilitada cuando se cre la vm.
+
+Usuarios:
+
+ user root /v1v4l4v1d4
+ qamonitor / z4nd4ng4
+
+Para saber el ip:
+
+ # ip addr show eth0
+
+Copio los directorios qa-monitor y tools (para el firebugs) de trinomio/sources
+de mi maquina.
+
+Instalación de paquetes necesarios:
+
+yum install git  java-1.8.0-openjdk.x86_64 ant java-1.8.0-openjdk-devel epel-release nginx
+
+Copiar ant.sh y setear JAVA_HOME
+JAVA=/usr/lib/jvm/java-1.8.0/
+
+Levantar el nginx:
+
+[qamonitor@localhost qa-monitor]$  sudo systemctl start  nginx
+[qamonitor@localhost qa-monitor]$  sudo systemctl enable  nginx
+
+Creo directorio para publicar los archivos de qa-monitor
+
+$ sudo mkdir /usr/share/nginx/html/qa-monitor
+$ sudo chown qamonitor.qamonitor /usr/share/nginx/html/qa-monitor
+
+DOCUMENTACION FINDBUGS:
+
+http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf
+
+INSTALACION DE TIMER USANDO SYSTEMCTL
+
+Agrego los siguientes archivos
+
+[qamonitor@localhost qa-monitor]$ cat /etc/systemd/system/qamonitor.service 
+[Unit]
+Description=QaMonitor Timer
+
+[Service]
+Type=simple
+User=qamonitor
+Group=qamonitor
+ExecStart=/home/qamonitor/qa-monitor/timer.sh
+[qamonitor@localhost qa-monitor]$ cat /etc/systemd/system/qamonitor.timer
+[Unit]
+Description=QaMonitor Timer
+
+[Timer]
+OnBootSec=15min
+OnCalendar=*:0/30
+
+[Install]
+WantedBy=timers.target
+
+Habilito e inicio con:
+
+sudo systemctl enable qamonitor.timer
+sudo systemctl enable qamonitor.service
+sudo systemctl start qamonitor.timer
+
+Para listar los timers:
+
+$ systemctl list-timers
+
+Para ver el log 
+
+$ journalctl --system -f
+
+
