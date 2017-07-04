@@ -109,6 +109,10 @@ class Repository:
                                           output_path)
 
                 results[commit_hash] = tester.save_data(commit_hash)
+            if 'author' not in results[commit_hash]:
+                results[commit_hash]['author'] = self.log[n]['author']
+            if 'subject' not in results[commit_hash]:
+                results[commit_hash]['subject'] = self.log[n]['subject']
 
         json.dump(results, open(collectors_data_path, 'w'))
 
