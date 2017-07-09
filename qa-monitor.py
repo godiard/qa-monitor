@@ -4,6 +4,7 @@ import shutil
 from subprocess import Popen, STDOUT, PIPE
 import json
 import time
+from string import Template
 
 MAX_DEPTH = 200
 
@@ -36,7 +37,7 @@ class Repository:
         # url = git@gitlab.trinom.io:beagle/superclubs.git
         # url = git@github.com:godiard/typing-turtle-activity.git
         self.url = url
-        self._update = update
+        self.update = update
 
         self.directory = self.url[self.url.rfind('/')+1:]
         if '.git'in self.directory:
@@ -47,7 +48,7 @@ class Repository:
             _exec_command('.', 'git', 'clone', url)
         else:
             _exec_command(self.directory, 'git', 'checkout', 'master')
-            if self._update:
+            if self.update:
                 _exec_command(self.directory, 'git', 'pull')
         self.read_log()
 
@@ -98,6 +99,8 @@ class Repository:
                 print "Loading data commit " + commit_hash
                 tester.load_data(commit_hash, results[commit_hash])
             else:
+                if not self.update:
+                    continue
                 print "Testing commit " + commit_hash
                 _exec_command(self.directory, 'git', 'checkout', commit_hash)
                 # le quito un punto del principio porque el path es relativo a
@@ -118,6 +121,8 @@ class Repository:
         # keep reference to the result to be used when the html is build
         self.results = results
 
+        if not self.update:
+            return
         # get master and compile, to avoid dependency errors in other projects
         _exec_command(self.directory, 'git', 'checkout', 'master')
         _exec_command(self.directory, '../../ant.sh')
@@ -189,7 +194,8 @@ class HtmlBuilder:
         self.gitlab_url = gitlab_url
         self.create_page()
         self.copy_web_files()
-        self.copy_findbugs_files()
+        if (self.repository.update):
+            self.copy_findbugs_files()
 
     def create_page(self):
         # revert the commits order, we want show the last commits
@@ -301,7 +307,6 @@ class HtmlBuilder:
                 # the on click function is replaced to show the local page
                 # to show the differences
                 onclick_function = """
-
                         function (d, element) {
                             var commit_hash = commits[d.x];
                             var url = './%s-%s-' + commit_hash + '.html';
@@ -309,18 +314,16 @@ class HtmlBuilder:
                             win.focus();
                         }""" % (self.project_name, collector['id'])
 
-            script += """
-            var chart_%s = c3.generate({
-                    data: {
-                        columns: [%s],
-                        onclick: %s,
-                        color: function(color, d){
+                color_function = Template("""
+                        function(color, d){
                             if (d.index == undefined) {
                                 return color;
                             }
-                            var poiIndex = %s_visible_points.indexOf(d.index);
+                            var poiIndex = ${coll_id}_visible_points.indexOf(
+                                    d.index);
                             if (poiIndex >= 0) {
-                                var poiData = %s_visible_points_data[poiIndex];
+                                var poiData = ${coll_id}_visible_points_data[
+                                    poiIndex];
                                 if (poiData['points'] < 0) {
                                     return "red"
                                 }
@@ -329,8 +332,14 @@ class HtmlBuilder:
                                 }
                             }
                             return "transparent"
-                        }
+                            }""").safe_substitute(coll_id=collector['id'])
 
+            script += Template("""
+            var chart_${collector_id} = c3.generate({
+                    data: {
+                        columns: [${cols}],
+                        onclick: ${onclick},
+                        color: ${color}
                     },
                     axis: {
                         x: {
@@ -346,10 +355,12 @@ class HtmlBuilder:
                             }
                          }
                     },
-                    bindto: '#%s'
+                    bindto: '#${collector_id}'
             });
-            """ % (collector['id'], columns, onclick_function, collector['id'],
-                   collector['id'], collector['id'])
+            """).safe_substitute(collector_id=collector['id'],
+                                 cols=columns,
+                                 onclick=onclick_function,
+                                 color=color_function)
 
         script += """
             };
