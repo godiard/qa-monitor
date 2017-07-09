@@ -115,6 +115,8 @@ class Repository:
                 results[commit_hash]['subject'] = self.log[n]['subject']
 
         json.dump(results, open(collectors_data_path, 'w'))
+        # keep reference to the result to be used when the html is build
+        self.results = results
 
         # get master and compile, to avoid dependency errors in other projects
         _exec_command(self.directory, 'git', 'checkout', 'master')
@@ -180,8 +182,9 @@ class Tester:
 
 class HtmlBuilder:
 
-    def __init__(self, tester, project_name, gitlab_url):
+    def __init__(self, tester, repository,  project_name, gitlab_url):
         self.tester = tester
+        self.repository = repository
         self.project_name = project_name
         self.gitlab_url = gitlab_url
         self.create_page()
@@ -233,6 +236,7 @@ class HtmlBuilder:
 
             collector_data = []
             collector_interesting_points = []
+            collector_interesting_points_data = []
             for n in range(values):
                 collector_data.append([])
 
@@ -250,9 +254,19 @@ class HtmlBuilder:
                     try:
                         if index > 0:
                             prev_commit = commits[index - 1]
-                            if collector['results'][commit][n] != \
-                                    collector['results'][prev_commit][n]:
+                            difference = \
+                                collector['results'][commit][n] - \
+                                collector['results'][prev_commit][n]
+                            if difference != 0:
                                 collector_interesting_points.append(index)
+                                repo_data = self.repository.results
+                                author = repo_data[commit]['author']
+                                subject = repo_data[commit]['subject']
+                                poi_data = {'points': -difference,
+                                            'author': author,
+                                            'subject': subject}
+                                collector_interesting_points_data.append(
+                                    poi_data)
                     except:
                         print "Can't compare point of interest"
 
@@ -261,6 +275,8 @@ class HtmlBuilder:
                     collector['id'], n, json.dumps(collector_data[n]))
             script += "var %s_visible_points = %s;\n" % (
                 collector['id'], json.dumps(collector_interesting_points))
+            script += "var %s_visible_points_data = %s;\n" % (
+                collector['id'], json.dumps(collector_interesting_points_data))
 
             self.point_of_interest_report(collector, commits,
                                           collector_interesting_points)
@@ -302,8 +318,15 @@ class HtmlBuilder:
                             if (d.index == undefined) {
                                 return color;
                             }
-                            if (%s_visible_points.indexOf(d.index) >= 0) {
-                                return "red"
+                            var poiIndex = %s_visible_points.indexOf(d.index);
+                            if (poiIndex >= 0) {
+                                var poiData = %s_visible_points_data[poiIndex];
+                                if (poiData['points'] < 0) {
+                                    return "red"
+                                }
+                                if (poiData['points'] > 0) {
+                                    return "green"
+                                }
                             }
                             return "transparent"
                         }
@@ -326,7 +349,7 @@ class HtmlBuilder:
                     bindto: '#%s'
             });
             """ % (collector['id'], columns, onclick_function, collector['id'],
-                   collector['id'])
+                   collector['id'], collector['id'])
 
         script += """
             };
@@ -434,11 +457,10 @@ if __name__ == '__main__':
     for arg in sys.argv:
         if arg in ['-n', '--no-pull']:
             update = False
-
     projects = json.load(open('./projects.json'))
     for project in projects:
         repo = Repository(project['repository'], update)
         tester = Tester()
         repo.run_tests(tester)
-        html_builder = HtmlBuilder(tester, project['name'],
+        html_builder = HtmlBuilder(tester, repo, project['name'],
                                    project['gitlab_commit_url'])
