@@ -334,6 +334,26 @@ class HtmlBuilder:
                             return "transparent"
                             }""").safe_substitute(coll_id=collector['id'])
 
+
+                content_function = Template("""
+                        function (d, defaultTitleFmt, defaultValueFmt, color) {
+                            if (d[0].index == undefined) {
+                                return "";
+                            }
+                            var poiIndex = ${coll_id}_visible_points.indexOf(
+                                    d[0].index);
+                            if (poiIndex >= 0) {
+                                var poiData = ${coll_id}_visible_points_data[
+                                    poiIndex];
+                                text = "<table><tr><td>" +
+                                    "Puntos:" + poiData['points'] + "<br>" +
+                                    "Autor:" + poiData['author'] + "<br>" +
+                                    poiData['subject'] +
+                                    "</td></tr></table>";
+                            return text;
+                            }
+                        }""").safe_substitute(coll_id=collector['id'])
+
             script += Template("""
             var chart_${collector_id} = c3.generate({
                     data: {
@@ -341,6 +361,8 @@ class HtmlBuilder:
                         onclick: ${onclick},
                         color: ${color}
                     },
+                    point: {r: 5},
+                    tooltip: {contents: ${content}},
                     axis: {
                         x: {
                             type: 'category',
@@ -360,7 +382,8 @@ class HtmlBuilder:
             """).safe_substitute(collector_id=collector['id'],
                                  cols=columns,
                                  onclick=onclick_function,
-                                 color=color_function)
+                                 color=color_function,
+                                 content=content_function)
 
         script += """
             };
