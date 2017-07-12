@@ -56,7 +56,7 @@ class Repository:
         # Read the log
         log_output = _exec_command(self.directory, 'git', 'log',
                                    '--pretty=format:%H|%aN|%s',
-                                   '--simplify-merges')
+                                   '--no-merges')
         self.log = []
         for line in log_output.split('\n'):
             # print line
