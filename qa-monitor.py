@@ -314,56 +314,56 @@ class HtmlBuilder:
                             win.focus();
                         }""" % (self.project_name, collector['id'])
 
-                color_function = Template("""
-                        function(color, d){
-                            if (d.index == undefined) {
-                                return color;
+            color_function = Template("""
+                    function(color, d){
+                        if (d.index == undefined) {
+                            return color;
+                        }
+                        var poiIndex = ${coll_id}_visible_points.indexOf(
+                                d.index);
+                        if (poiIndex >= 0) {
+                            var poiData = ${coll_id}_visible_points_data[
+                                poiIndex];
+                            if (poiData['points'] < 0) {
+                                return "red"
                             }
-                            var poiIndex = ${coll_id}_visible_points.indexOf(
-                                    d.index);
-                            if (poiIndex >= 0) {
-                                var poiData = ${coll_id}_visible_points_data[
-                                    poiIndex];
-                                if (poiData['points'] < 0) {
-                                    return "red"
-                                }
-                                if (poiData['points'] > 0) {
-                                    return "green"
-                                }
+                            if (poiData['points'] > 0) {
+                                return "green"
                             }
-                            return "transparent"
-                            }""").safe_substitute(coll_id=collector['id'])
-
-                content_function = Template("""
-                        function (d, defaultTitleFmt, defaultValueFmt, color) {
-                            if (d[0].index == undefined) {
-                                return "";
-                            }
-                            var poiIndex = ${coll_id}_visible_points.indexOf(
-                                    d[0].index);
-                            var values = '';
-                            for (var i = 0; i < d.length; i++) {
-                                values = values + d[i].name + ':' +
-                                         d[i].value + '<br/>';
-                            }
-                            if (poiIndex >= 0) {
-                                var poiData = ${coll_id}_visible_points_data[
-                                    poiIndex];
-                                var text = "<table><tr><td>" +
-                                    commits[d[0].x] + "<br>" +
-                                    values +
-                                    "Puntos:" + poiData['points'] + "<br>" +
-                                    "Autor:" + poiData['author'] + "<br>" +
-                                    poiData['subject'] +
-                                    "</td></tr></table>";
-                                return text;
-                            } else {
-                                return "<table><tr><td>" +
-                                    commits[d[0].x] + "<br>" +
-                                    values +
-                                    "</td></tr></table>";
-                            }
+                        }
+                        return "transparent"
                         }""").safe_substitute(coll_id=collector['id'])
+
+            content_function = Template("""
+                    function (d, defaultTitleFmt, defaultValueFmt, color) {
+                        if (d[0].index == undefined) {
+                            return "";
+                        }
+                        var poiIndex = ${coll_id}_visible_points.indexOf(
+                                d[0].index);
+                        var values = '';
+                        for (var i = 0; i < d.length; i++) {
+                            values = values + d[i].name + ':' +
+                                     d[i].value + '<br/>';
+                        }
+                        if (poiIndex >= 0) {
+                            var poiData = ${coll_id}_visible_points_data[
+                                poiIndex];
+                            var text = "<table><tr><td>" +
+                                commits[d[0].x] + "<br>" +
+                                values +
+                                "Puntos:" + poiData['points'] + "<br>" +
+                                "Autor:" + poiData['author'] + "<br>" +
+                                poiData['subject'] +
+                                "</td></tr></table>";
+                            return text;
+                        } else {
+                            return "<table><tr><td>" +
+                                commits[d[0].x] + "<br>" +
+                                values +
+                                "</td></tr></table>";
+                        }
+                    }""").safe_substitute(coll_id=collector['id'])
 
             script += Template("""
             var chart_${collector_id} = c3.generate({
