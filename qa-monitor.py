@@ -334,7 +334,6 @@ class HtmlBuilder:
                             return "transparent"
                             }""").safe_substitute(coll_id=collector['id'])
 
-
                 content_function = Template("""
                         function (d, defaultTitleFmt, defaultValueFmt, color) {
                             if (d[0].index == undefined) {
@@ -342,15 +341,27 @@ class HtmlBuilder:
                             }
                             var poiIndex = ${coll_id}_visible_points.indexOf(
                                     d[0].index);
+                            var values = '';
+                            for (var i = 0; i < d.length; i++) {
+                                values = values + d[i].name + ':' +
+                                         d[i].value + '<br/>';
+                            }
                             if (poiIndex >= 0) {
                                 var poiData = ${coll_id}_visible_points_data[
                                     poiIndex];
-                                text = "<table><tr><td>" +
+                                var text = "<table><tr><td>" +
+                                    commits[d[0].x] + "<br>" +
+                                    values +
                                     "Puntos:" + poiData['points'] + "<br>" +
                                     "Autor:" + poiData['author'] + "<br>" +
                                     poiData['subject'] +
                                     "</td></tr></table>";
-                            return text;
+                                return text;
+                            } else {
+                                return "<table><tr><td>" +
+                                    commits[d[0].x] + "<br>" +
+                                    values +
+                                    "</td></tr></table>";
                             }
                         }""").safe_substitute(coll_id=collector['id'])
 
