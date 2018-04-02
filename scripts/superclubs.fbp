@@ -3,6 +3,7 @@
   <Project projectName="superclubs">
     <Jar>../superclubs/webApplication/WEB-INF/lib/cms.jar</Jar>
     <Jar>../superclubs/webApplication/WEB-INF/lib/sclubs.jar</Jar>
+    <Jar>../superclubs/webApplication/WEB-INF/lib/buquebus.jar</Jar>
     <AuxClasspathEntry>../superclubs/webApplication/WEB-INF/lib/jasperreports-3.0.0.jar</AuxClasspathEntry>
     <AuxClasspathEntry>../superclubs/webApplication/WEB-INF/lib/gson-1.6.jar</AuxClasspathEntry>
     <AuxClasspathEntry>../superclubs/webApplication/WEB-INF/lib/struts.jar</AuxClasspathEntry>
