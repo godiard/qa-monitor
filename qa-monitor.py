@@ -102,6 +102,8 @@ class Repository:
                 if not self.update:
                     continue
                 print "Testing commit " + commit_hash
+                # Tengo que borrar directorio con jars porque cambia segun los commits y da error al hacer checkout
+                _exec_command(self.directory, '/bin/rm', '-rf', os.getcwd() + '/' + self.directory + '/webApplication/WEB-INF/lib/')
                 _exec_command(self.directory, 'git', 'checkout', commit_hash)
                 # le quito un punto del principio porque el path es relativo a
                 # ./scripts/
