@@ -6,7 +6,7 @@ import json
 import time
 from string import Template
 
-MAX_DEPTH = 200
+MAX_DEPTH = 100
 
 
 def _exec_command(path, *args):
