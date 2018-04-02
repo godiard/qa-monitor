@@ -25,8 +25,8 @@ def _exec_command(path, *args):
         print 'OUTPUT'
         print out
         raise Exception(
-            'Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s'
-            % (cmd, err, out, proc.returncode), exit_code=proc.returncode)
+            'Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: '
+            % (cmd, err, out))
     return out
 
 
